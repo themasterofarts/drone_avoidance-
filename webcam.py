@@ -36,6 +36,7 @@ from utils import *
 from pydnet import *
 from stack import stackImages
 from display_img import display
+from PIL import Image
 
 # forces tensorflow to run on CPU
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
@@ -82,11 +83,18 @@ def main(_):
           end = time.time()
 
           disp_color = applyColorMap(disp[0,:,:,0]*20, 'plasma')
+          # print(type(disp_color.shape))
           toShow = (np.concatenate((img[0], disp_color), 0)*255.).astype(np.uint8)
           toShow = cv2.resize(toShow, (int(width/2), height))
 
-          w, h, _ = toShow.shape
+          disp_color = np.uint8(disp_color * 255.)
+          print(disp_color.shape)
 
+
+          w, h, _ = toShow.shape
+          print(toShow.shape)
+
+          roi = disp_color[0:int(9 * disp_color.shape[0] / 10), int(disp_color.shape[1] / 10):int(9 * disp_color.shape[1] / 10)]
 
 
           h_minf, h_maxf, s_minf, s_maxf, v_minf, v_maxf= 0, 112, 29, 255, 202, 255
@@ -138,9 +146,10 @@ def main(_):
           a4 = (y - x) * (h - y)
           a5 = (y - x) * u
           # print((c1, c2, c3, c4, c5))
-          print(w,h)
+          # print(w,h)
           display(disp_color, h, w)
           cv2.imshow('pydnet', toShow)
+          cv2.imshow("roi",roi)
           cv2.imshow('py-net', disp_color)
           cv2.imshow('pydnetfree', free)
           cv2.imshow('pydnetcol', col)
